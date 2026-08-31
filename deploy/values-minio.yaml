@@ -1,0 +1,26 @@
+# deploy/values-minio.yaml
+# Bitnami MinIO chart — single-node S3-compatible object storage.
+# Already provisioned as `minio` in namespace colossus-conduit-01;
+# values mirror the live credentials.
+#
+#   helm upgrade --install minio bitnami/minio \
+#     -f deploy/values-minio.yaml -n colossus-conduit-01
+
+mode: standalone
+
+auth:
+  rootUser: "admin"
+  rootPassword: "S3XD7_1PXAXXOEF8cCFaM5fj"
+
+defaultBuckets: "app-uploads"
+
+persistence:
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

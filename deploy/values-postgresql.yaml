@@ -1,0 +1,24 @@
+# deploy/values-postgresql.yaml
+# Bitnami PostgreSQL Helm chart values.
+# NOTE: this release is ALREADY provisioned and Running as `postgres` in
+# namespace colossus-conduit-01; the values below mirror the live
+# credentials so a re-deploy is a no-op rather than a password rotation.
+#
+#   helm upgrade --install postgres bitnami/postgresql \
+#     -f deploy/values-postgresql.yaml -n colossus-conduit-01
+
+auth:
+  postgresPassword: "xKRP2zTG0fLjalHpQKubDkWe"
+  database: app
+
+primary:
+  persistence:
+    size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

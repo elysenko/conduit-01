@@ -1,3 +1,6 @@
+// Conduit — RealWorld-shaped blogging platform
+// Data model per the technical plan (Step 2) and task decomposition.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,16 +10,112 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum UserRole {
+  ADMIN
+  USER
 }
 
-enum Role {
-  USER
-  ADMIN
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  bio          String?
+  image        String?
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  articles  Article[]  @relation("ArticleAuthor")
+  comments  Comment[]  @relation("CommentAuthor")
+  favorites Favorite[]
+  following Follow[]   @relation("Follower")
+  followers Follow[]   @relation("Followed")
+
+  @@index([createdAt])
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  body        String
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author    User         @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  tags      ArticleTag[]
+  favorites Favorite[]
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  articleId String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author  User    @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([articleId])
+  @@index([authorId])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles ArticleTag[]
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+}
+
+model Favorite {
+  userId    String
+  articleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, articleId])
+  @@index([articleId])
+}
+
+model Follow {
+  followerId String
+  followedId String
+  createdAt  DateTime @default(now())
+
+  follower User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("Followed", fields: [followedId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followedId])
+  @@index([followedId])
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
