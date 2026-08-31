@@ -1,0 +1,94 @@
+<div class="container page-section" data-testid="settings-page">
+  <div class="settings-card">
+    <h1 class="settings-title">Your settings</h1>
+
+    @if (errors().length) {
+      <ul class="error-messages" data-testid="settings-errors">
+        @for (message of errors(); track message) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    }
+    @if (saved()) {
+      <p class="saved-note" data-testid="settings-saved">Your settings have been updated.</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" data-testid="settings-form">
+      <div class="form-group">
+        <label class="form-label" for="settings-image">Profile picture URL</label>
+        <input
+          id="settings-image"
+          class="form-control"
+          type="url"
+          placeholder="https://…"
+          formControlName="image"
+          data-testid="settings-image"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-username">Username</label>
+        <input
+          id="settings-username"
+          class="form-control"
+          type="text"
+          formControlName="username"
+          data-testid="settings-username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-bio">Short bio</label>
+        <textarea
+          id="settings-bio"
+          class="form-control"
+          rows="6"
+          placeholder="Tell readers a little about yourself"
+          formControlName="bio"
+          data-testid="settings-bio"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-email">Email</label>
+        <input
+          id="settings-email"
+          class="form-control"
+          type="email"
+          formControlName="email"
+          data-testid="settings-email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settings-password">New password</label>
+        <input
+          id="settings-password"
+          class="form-control"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Leave blank to keep your current password"
+          formControlName="password"
+          data-testid="settings-password"
+        />
+        <span class="form-hint">Only sent when you fill it in.</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg btn-block" data-testid="settings-submit">
+        Update settings
+      </button>
+    </form>
+
+    @if (isAdmin()) {
+      <a class="admin-link" routerLink="/admin/settings" data-testid="settings-admin-link">
+        Service &amp; credential settings →
+      </a>
+    }
+
+    <hr class="divider" />
+
+    <button type="button" class="btn btn-danger btn-block" data-testid="settings-logout" (click)="logout()">
+      Or click here to log out
+    </button>
+  </div>
+</div>

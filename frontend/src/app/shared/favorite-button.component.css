@@ -1,0 +1,16 @@
+:host {
+  display: inline-flex;
+}
+
+:host > button {
+  width: 100%;
+}
+
+button.compact {
+  min-height: 32px;
+  padding: 0 var(--space-2);
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+}

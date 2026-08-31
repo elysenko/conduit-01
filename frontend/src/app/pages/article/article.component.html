@@ -1,0 +1,111 @@
+@if (loading()) {
+  <div class="state-block" data-testid="article-loading">
+    <div class="spinner"></div>
+    Loading article…
+  </div>
+} @else if (error()) {
+  <div class="state-block state-error" data-testid="article-error">{{ error() }}</div>
+} @else if (!article()) {
+  <div class="state-block" data-testid="article-missing">
+    That article no longer exists. <a routerLink="/">Back to the feed</a>.
+  </div>
+} @else {
+  <article data-testid="article-page">
+    <header class="article-banner">
+      <div class="container">
+        <h1 class="article-title" data-testid="article-title">{{ article()!.title }}</h1>
+
+        <div class="article-meta">
+          <a [routerLink]="['/profile', article()!.author.username]">
+            <img
+              class="avatar"
+              [src]="article()!.author.image"
+              [alt]="article()!.author.username"
+              width="36"
+              height="36"
+            />
+          </a>
+          <div class="author-info">
+            <a class="author-name light" [routerLink]="['/profile', article()!.author.username]">{{
+              article()!.author.username
+            }}</a>
+            <span class="article-date">{{ article()!.createdAt | date: 'longDate' }}</span>
+          </div>
+
+          <div class="meta-actions">
+            @if (isAuthor()) {
+              <a
+                class="btn btn-sm btn-secondary"
+                [routerLink]="['/editor', article()!.slug]"
+                data-testid="article-edit"
+                >Edit Article</a
+              >
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                data-testid="article-delete"
+                (click)="openDeleteConfirm()"
+              >
+                Delete Article
+              </button>
+            } @else {
+              <app-follow-button
+                [username]="article()!.author.username"
+                [following]="article()!.author.following"
+                (toggled)="toggleFollow()"
+              />
+              <app-favorite-button
+                [favorited]="article()!.favorited"
+                [count]="article()!.favoritesCount"
+                (toggled)="toggleFavorite()"
+              />
+            }
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container page-section">
+      <div class="article-body" data-testid="article-body">
+        @for (paragraph of paragraphs(); track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+
+      <ul class="tag-list article-tags" data-testid="article-tags">
+        @for (tag of article()!.tagList; track tag) {
+          <li>
+            <a class="tag-pill tag-outline" routerLink="/" [queryParams]="{ tag: tag }">{{ tag }}</a>
+          </li>
+        }
+      </ul>
+
+      <div class="article-actions-footer">
+        <app-favorite-button
+          [favorited]="article()!.favorited"
+          [count]="article()!.favoritesCount"
+          (toggled)="toggleFavorite()"
+        />
+        @if (!isAuthor()) {
+          <app-follow-button
+            [username]="article()!.author.username"
+            [following]="article()!.author.following"
+            (toggled)="toggleFollow()"
+          />
+        }
+      </div>
+
+      <app-comment-list [articleSlug]="article()!.slug" />
+    </div>
+  </article>
+
+  @if (showDeleteConfirm()) {
+    <app-confirm-modal
+      heading="Delete this article?"
+      message="“{{ article()!.title }}” and its comments will be removed. This cannot be undone."
+      confirmLabel="Delete article"
+      (confirmed)="confirmDelete()"
+      (dismissed)="closeDeleteConfirm()"
+    />
+  }
+}

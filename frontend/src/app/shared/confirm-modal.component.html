@@ -1,0 +1,19 @@
+<div class="backdrop" data-testid="confirm-modal" (click)="dismissed.emit()">
+  <div class="dialog" role="dialog" aria-modal="true" [attr.aria-label]="heading" (click)="$event.stopPropagation()">
+    <h2 class="dialog-title">{{ heading }}</h2>
+    <p class="dialog-message">{{ message }}</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-secondary" data-testid="confirm-cancel" (click)="dismissed.emit()">
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger-solid"
+        data-testid="confirm-accept"
+        (click)="confirmed.emit()"
+      >
+        {{ confirmLabel }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+:host {
+  display: inline-flex;
+}
+
+:host > button {
+  width: 100%;
+}
+
+.is-following {
+  background: var(--color-surface-alt);
+  border-color: var(--color-text-faint);
+  color: var(--color-text-muted);
+}

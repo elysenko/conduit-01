@@ -1,0 +1,63 @@
+/* Conduit design tokens — the single source of truth for colour, spacing and type.
+   Component CSS must reference these via var(--token); never raw hex. */
+:root {
+  /* Brand */
+  --color-primary: #5cb85c;
+  --color-primary-dark: #449d44;
+  --color-primary-soft: #eaf6ea;
+  --color-danger: #b85c5c;
+  --color-danger-dark: #a04c4c;
+  --color-danger-soft: #fbeeee;
+
+  /* Neutrals */
+  --color-text: #373a3c;
+  --color-text-muted: #55595c;
+  --color-text-faint: #bbbbbb;
+  --color-border: #dddddd;
+  --color-border-soft: #eeeeee;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f3f3f3;
+  --color-banner: #5cb85c;
+  --color-banner-text: #ffffff;
+
+  /* Status */
+  --color-ok: #5cb85c;
+  --color-warn: #d9a441;
+  --color-warn-soft: #fdf6e7;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  /* Radius */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-pill: 999px;
+
+  /* Type */
+  --font-sans: 'Source Sans Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-brand: 'Titillium Web', 'Source Sans Pro', system-ui, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-hero: 3.5rem;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-banner: inset 0 8px 8px -8px rgba(0, 0, 0, 0.3),
+    inset 0 -8px 8px -8px rgba(0, 0, 0, 0.3);
+
+  /* Layout */
+  --container-max: 1140px;
+  --tap-target: 44px;
+  --mobile-nav-height: 56px;
+}

@@ -1,0 +1,16 @@
+@if (pages.length > 1) {
+  <nav class="pagination" aria-label="Article pages" data-testid="pagination">
+    @for (page of pages; track page) {
+      <button
+        type="button"
+        class="page"
+        [class.active]="page === currentPage"
+        [attr.aria-current]="page === currentPage ? 'page' : null"
+        [attr.data-testid]="'page-' + page"
+        (click)="pageChange.emit(page)"
+      >
+        {{ page }}
+      </button>
+    }
+  </nav>
+}

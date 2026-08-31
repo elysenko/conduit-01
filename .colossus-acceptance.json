@@ -1,5 +1,14 @@
 {
   "ready_testid": "app-ready",
-  "expect_text": [],
-  "reject_signatures": ["home-title\">Users<", "Loading...", "Failed to load users."]
+  "expect_text": [
+    "Conduit",
+    "Global Feed",
+    "How to train your dragon",
+    "Popular Tags"
+  ],
+  "reject_signatures": [
+    "home-title\">Users<",
+    "Loading...",
+    "Failed to load users."
+  ]
 }

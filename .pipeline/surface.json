@@ -1,22 +1,481 @@
 {
   "_generated": true,
   "_scaffolded_at": "2026-08-31T06:59:27Z",
-  "fileBudget": { "maxLines": 400, "hardLimit": 500 },
+  "fileBudget": {
+    "maxLines": 400,
+    "hardLimit": 500
+  },
   "routes": [
-    { "method": "GET", "path": "/health" },
-    { "method": "GET", "path": "/trpc/users.findAll" },
-    { "method": "GET", "path": "/trpc/users.findById" }
+    {
+      "method": "GET",
+      "path": "/health"
+    },
+    {
+      "method": "GET",
+      "path": "/trpc/users.findAll"
+    },
+    {
+      "method": "GET",
+      "path": "/trpc/users.findById"
+    }
   ],
   "components": [
-    { "selector": "app-root", "file": "frontend/src/app/app.component.ts", "maxLines": 400 },
-    { "selector": "app-home", "file": "frontend/src/app/home/home.component.ts", "maxLines": 400 }
+    {
+      "selector": "app-root",
+      "file": "frontend/src/app/app.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-header",
+      "file": "frontend/src/app/layout/header.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-footer",
+      "file": "frontend/src/app/layout/footer.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-mobile-nav",
+      "file": "frontend/src/app/layout/mobile-nav.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-home",
+      "file": "frontend/src/app/pages/home/home.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-login",
+      "file": "frontend/src/app/pages/auth/login.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-register",
+      "file": "frontend/src/app/pages/auth/register.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-article",
+      "file": "frontend/src/app/pages/article/article.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-comment-list",
+      "file": "frontend/src/app/pages/article/comment-list.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-editor",
+      "file": "frontend/src/app/pages/editor/editor.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-profile",
+      "file": "frontend/src/app/pages/profile/profile.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-profile-articles",
+      "file": "frontend/src/app/pages/profile/profile-articles.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-settings",
+      "file": "frontend/src/app/pages/settings/settings.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-admin-settings",
+      "file": "frontend/src/app/pages/admin/settings.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-article-preview",
+      "file": "frontend/src/app/shared/article-preview.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-pagination",
+      "file": "frontend/src/app/shared/pagination.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-favorite-button",
+      "file": "frontend/src/app/shared/favorite-button.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-follow-button",
+      "file": "frontend/src/app/shared/follow-button.component.ts",
+      "maxLines": 400
+    },
+    {
+      "selector": "app-confirm-modal",
+      "file": "frontend/src/app/shared/confirm-modal.component.ts",
+      "maxLines": 400
+    }
   ],
   "testIds": [
-    { "id": "app-ready", "element": "div", "component": "app-root" },
-    { "id": "home-main", "element": "main", "component": "app-home" },
-    { "id": "home-title", "element": "h1", "component": "app-home" },
-    { "id": "users-loading", "element": "p", "component": "app-home" },
-    { "id": "users-error", "element": "p", "component": "app-home" },
-    { "id": "users-list", "element": "ul", "component": "app-home" }
+    {
+      "id": "app-ready",
+      "element": "div",
+      "component": "app-root"
+    },
+    {
+      "id": "app-main",
+      "element": "main",
+      "component": "app-root"
+    },
+    {
+      "id": "app-header",
+      "element": "nav",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-brand",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-home",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-new-article",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-settings",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-admin",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-profile",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-login",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "nav-register",
+      "element": "a",
+      "component": "app-header"
+    },
+    {
+      "id": "mobile-nav",
+      "element": "nav",
+      "component": "app-mobile-nav"
+    },
+    {
+      "id": "home-main",
+      "element": "div",
+      "component": "app-home"
+    },
+    {
+      "id": "home-title",
+      "element": "h1",
+      "component": "app-home"
+    },
+    {
+      "id": "feed-toggle",
+      "element": "nav",
+      "component": "app-home"
+    },
+    {
+      "id": "tab-global-feed",
+      "element": "button",
+      "component": "app-home"
+    },
+    {
+      "id": "tab-your-feed",
+      "element": "button",
+      "component": "app-home"
+    },
+    {
+      "id": "tab-tag",
+      "element": "button",
+      "component": "app-home"
+    },
+    {
+      "id": "clear-tag",
+      "element": "button",
+      "component": "app-home"
+    },
+    {
+      "id": "popular-tags-title",
+      "element": "h2",
+      "component": "app-home"
+    },
+    {
+      "id": "popular-tags",
+      "element": "ul",
+      "component": "app-home"
+    },
+    {
+      "id": "article-list",
+      "element": "div",
+      "component": "app-home"
+    },
+    {
+      "id": "articles-loading",
+      "element": "div",
+      "component": "app-home"
+    },
+    {
+      "id": "articles-error",
+      "element": "div",
+      "component": "app-home"
+    },
+    {
+      "id": "articles-empty",
+      "element": "div",
+      "component": "app-home"
+    },
+    {
+      "id": "pagination",
+      "element": "nav",
+      "component": "app-pagination"
+    },
+    {
+      "id": "login-page",
+      "element": "div",
+      "component": "app-login"
+    },
+    {
+      "id": "login-form",
+      "element": "form",
+      "component": "app-login"
+    },
+    {
+      "id": "login-email",
+      "element": "input",
+      "component": "app-login"
+    },
+    {
+      "id": "login-password",
+      "element": "input",
+      "component": "app-login"
+    },
+    {
+      "id": "login-submit",
+      "element": "button",
+      "component": "app-login"
+    },
+    {
+      "id": "login-errors",
+      "element": "ul",
+      "component": "app-login"
+    },
+    {
+      "id": "demo-login",
+      "element": "button",
+      "component": "app-login"
+    },
+    {
+      "id": "register-page",
+      "element": "div",
+      "component": "app-register"
+    },
+    {
+      "id": "register-form",
+      "element": "form",
+      "component": "app-register"
+    },
+    {
+      "id": "register-submit",
+      "element": "button",
+      "component": "app-register"
+    },
+    {
+      "id": "article-page",
+      "element": "article",
+      "component": "app-article"
+    },
+    {
+      "id": "article-title",
+      "element": "h1",
+      "component": "app-article"
+    },
+    {
+      "id": "article-body",
+      "element": "div",
+      "component": "app-article"
+    },
+    {
+      "id": "article-tags",
+      "element": "ul",
+      "component": "app-article"
+    },
+    {
+      "id": "article-edit",
+      "element": "a",
+      "component": "app-article"
+    },
+    {
+      "id": "article-delete",
+      "element": "button",
+      "component": "app-article"
+    },
+    {
+      "id": "confirm-modal",
+      "element": "div",
+      "component": "app-confirm-modal"
+    },
+    {
+      "id": "confirm-accept",
+      "element": "button",
+      "component": "app-confirm-modal"
+    },
+    {
+      "id": "confirm-cancel",
+      "element": "button",
+      "component": "app-confirm-modal"
+    },
+    {
+      "id": "comment-section",
+      "element": "section",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-form",
+      "element": "form",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-input",
+      "element": "textarea",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-submit",
+      "element": "button",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-list",
+      "element": "ul",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-delete",
+      "element": "button",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "comment-signin-prompt",
+      "element": "p",
+      "component": "app-comment-list"
+    },
+    {
+      "id": "editor-page",
+      "element": "div",
+      "component": "app-editor"
+    },
+    {
+      "id": "editor-form",
+      "element": "form",
+      "component": "app-editor"
+    },
+    {
+      "id": "editor-publish",
+      "element": "button",
+      "component": "app-editor"
+    },
+    {
+      "id": "editor-tags",
+      "element": "ul",
+      "component": "app-editor"
+    },
+    {
+      "id": "profile-page",
+      "element": "div",
+      "component": "app-profile"
+    },
+    {
+      "id": "profile-username",
+      "element": "h1",
+      "component": "app-profile"
+    },
+    {
+      "id": "profile-tabs",
+      "element": "nav",
+      "component": "app-profile"
+    },
+    {
+      "id": "tab-my-articles",
+      "element": "a",
+      "component": "app-profile"
+    },
+    {
+      "id": "tab-favorited",
+      "element": "a",
+      "component": "app-profile"
+    },
+    {
+      "id": "profile-article-list",
+      "element": "div",
+      "component": "app-profile-articles"
+    },
+    {
+      "id": "settings-page",
+      "element": "div",
+      "component": "app-settings"
+    },
+    {
+      "id": "settings-form",
+      "element": "form",
+      "component": "app-settings"
+    },
+    {
+      "id": "settings-submit",
+      "element": "button",
+      "component": "app-settings"
+    },
+    {
+      "id": "settings-logout",
+      "element": "button",
+      "component": "app-settings"
+    },
+    {
+      "id": "admin-settings-page",
+      "element": "div",
+      "component": "app-admin-settings"
+    },
+    {
+      "id": "admin-unconfigured-banner",
+      "element": "div",
+      "component": "app-admin-settings"
+    },
+    {
+      "id": "admin-service-list",
+      "element": "div",
+      "component": "app-admin-settings"
+    },
+    {
+      "id": "favorite-button",
+      "element": "button",
+      "component": "app-favorite-button"
+    },
+    {
+      "id": "follow-button",
+      "element": "button",
+      "component": "app-follow-button"
+    },
+    {
+      "id": "article-preview-<slug>",
+      "element": "article",
+      "component": "app-article-preview"
+    }
   ]
 }

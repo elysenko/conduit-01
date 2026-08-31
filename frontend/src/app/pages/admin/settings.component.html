@@ -1,0 +1,80 @@
+<div class="container page-section" data-testid="admin-settings-page">
+  <header class="admin-header">
+    <div>
+      <h1 class="admin-title">Service settings</h1>
+      <p class="admin-subtitle">
+        Backing-service credentials. Values are stored server-side and masked on read.
+      </p>
+    </div>
+    <a class="btn btn-sm btn-secondary" routerLink="/settings" data-testid="admin-back">
+      ← Your settings
+    </a>
+  </header>
+
+  @if (unconfigured().length) {
+    <div class="alert" data-testid="admin-unconfigured-banner">
+      <strong>The following need credentials to activate:</strong>
+      {{ unconfigured().join(', ') }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="state-block" data-testid="admin-loading">
+      <div class="spinner"></div>
+      Loading service settings…
+    </div>
+  } @else if (error()) {
+    <div class="state-block state-error" data-testid="admin-error">{{ error() }}</div>
+  } @else {
+    <div class="service-grid" data-testid="admin-service-list">
+      @for (service of settings(); track service.service) {
+        <section class="card service" [attr.data-testid]="'service-' + service.service">
+          <header class="service-header">
+            <h2 class="service-name">{{ service.label }}</h2>
+            <span
+              class="badge"
+              [class.badge-ok]="service.configured"
+              [class.badge-warn]="!service.configured"
+              [attr.data-testid]="'service-status-' + service.service"
+            >
+              {{ service.configured ? 'Configured' : 'Needs credentials' }}
+            </span>
+          </header>
+          <p class="service-description">{{ service.description }}</p>
+
+          @for (field of service.fields; track field.key) {
+            <div class="form-group">
+              <label class="form-label" [attr.for]="service.service + '-' + field.key">
+                {{ field.label }}
+                <code class="key-name">{{ field.key }}</code>
+              </label>
+              <input
+                class="form-control"
+                [id]="service.service + '-' + field.key"
+                [type]="field.secret ? 'password' : 'text'"
+                [value]="field.value"
+                [placeholder]="field.placeholder"
+                [attr.data-testid]="'field-' + field.key"
+                (input)="updateField(service.service, field.key, $event)"
+              />
+            </div>
+          }
+
+          <div class="service-actions">
+            @if (savedService() === service.service) {
+              <span class="saved-note" [attr.data-testid]="'saved-' + service.service">Saved</span>
+            }
+            <button
+              type="button"
+              class="btn btn-primary"
+              [attr.data-testid]="'save-' + service.service"
+              (click)="save(service.service)"
+            >
+              Save credentials
+            </button>
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>

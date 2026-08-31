@@ -1,0 +1,41 @@
+<nav class="mobile-nav" data-testid="mobile-nav" aria-label="Primary">
+  <a
+    class="tab"
+    routerLink="/"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    data-testid="mobile-nav-home"
+  >
+    <span class="glyph" aria-hidden="true">&#9750;</span>
+    <span class="label">Home</span>
+  </a>
+
+  @if (isAuthenticated()) {
+    <a class="tab" routerLink="/editor" routerLinkActive="active" data-testid="mobile-nav-new">
+      <span class="glyph" aria-hidden="true">&plus;</span>
+      <span class="label">Write</span>
+    </a>
+    <a
+      class="tab"
+      [routerLink]="['/profile', currentUser()!.username]"
+      routerLinkActive="active"
+      data-testid="mobile-nav-profile"
+    >
+      <span class="glyph" aria-hidden="true">&#9679;</span>
+      <span class="label">Profile</span>
+    </a>
+    <a class="tab" routerLink="/settings" routerLinkActive="active" data-testid="mobile-nav-settings">
+      <span class="glyph" aria-hidden="true">&#9881;</span>
+      <span class="label">Settings</span>
+    </a>
+  } @else {
+    <a class="tab" routerLink="/login" routerLinkActive="active" data-testid="mobile-nav-login">
+      <span class="glyph" aria-hidden="true">&#8594;</span>
+      <span class="label">Sign in</span>
+    </a>
+    <a class="tab" routerLink="/register" routerLinkActive="active" data-testid="mobile-nav-register">
+      <span class="glyph" aria-hidden="true">&#9998;</span>
+      <span class="label">Sign up</span>
+    </a>
+  }
+</nav>

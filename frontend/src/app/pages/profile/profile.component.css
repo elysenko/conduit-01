@@ -1,0 +1,40 @@
+.profile-banner {
+  background: var(--color-surface-alt);
+  padding: var(--space-6) 0 var(--space-5);
+  text-align: center;
+}
+
+.profile-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  margin-bottom: var(--space-3);
+}
+
+.profile-name {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.profile-bio {
+  max-width: 520px;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+.profile-bio.empty { color: var(--color-text-faint); }
+
+.profile-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.profile-tabs {
+  max-width: 760px;
+  margin: 0 auto;
+}

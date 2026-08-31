@@ -1,0 +1,86 @@
+<section class="comments" data-testid="comment-section">
+  <h2 class="comments-title">Comments ({{ comments().length }})</h2>
+
+  @if (canSubmit()) {
+    <form class="comment-form card" [formGroup]="form" (ngSubmit)="post()" data-testid="comment-form">
+      <label class="sr-only" for="comment-body">Write a comment</label>
+      <textarea
+        id="comment-body"
+        class="form-control"
+        rows="3"
+        placeholder="Write a comment…"
+        formControlName="body"
+        data-testid="comment-input"
+      ></textarea>
+      <div class="comment-form-footer">
+        <img
+          class="avatar"
+          [src]="currentUser()!.image"
+          [alt]="currentUser()!.username"
+          width="32"
+          height="32"
+        />
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="form.invalid"
+          data-testid="comment-submit"
+        >
+          Post Comment
+        </button>
+      </div>
+    </form>
+  } @else {
+    <p class="signin-prompt" data-testid="comment-signin-prompt">
+      <a routerLink="/login">Sign in</a> or <a routerLink="/register">sign up</a> to add comments on
+      this article.
+    </p>
+  }
+
+  @if (loading()) {
+    <div class="state-block" data-testid="comments-loading">
+      <div class="spinner"></div>
+      Loading comments…
+    </div>
+  } @else if (error()) {
+    <div class="state-block state-error" data-testid="comments-error">{{ error() }}</div>
+  } @else if (comments().length === 0) {
+    <div class="state-block" data-testid="comments-empty">
+      No comments yet. Be the first to say something.
+    </div>
+  } @else {
+    <ul class="comment-list" data-testid="comment-list">
+      @for (comment of comments(); track comment.id) {
+        <li class="comment card" [attr.data-testid]="'comment-' + comment.id">
+          <p class="comment-body">{{ comment.body }}</p>
+          <footer class="comment-meta">
+            <a [routerLink]="['/profile', comment.author.username]">
+              <img
+                class="avatar"
+                [src]="comment.author.image"
+                [alt]="comment.author.username"
+                width="24"
+                height="24"
+              />
+            </a>
+            <a class="author-name" [routerLink]="['/profile', comment.author.username]">{{
+              comment.author.username
+            }}</a>
+            <span class="article-date">{{ comment.createdAt | date: 'longDate' }}</span>
+            @if (isOwn(comment)) {
+              <button
+                type="button"
+                class="delete-comment"
+                aria-label="Delete comment"
+                data-testid="comment-delete"
+                (click)="remove(comment)"
+              >
+                Delete
+              </button>
+            }
+          </footer>
+        </li>
+      }
+    </ul>
+  }
+</section>

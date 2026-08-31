@@ -1,0 +1,23 @@
+@if (loading()) {
+  <div class="state-block" data-testid="profile-articles-loading">
+    <div class="spinner"></div>
+    Loading articles…
+  </div>
+} @else if (error()) {
+  <div class="state-block state-error" data-testid="profile-articles-error">{{ error() }}</div>
+} @else if (visible().length === 0) {
+  <div class="state-block" data-testid="profile-articles-empty">
+    @if (showFavorites()) {
+      No favorited articles yet. Tap the heart on anything worth keeping.
+    } @else {
+      No articles published yet.
+      <a routerLink="/editor">Write the first one</a>.
+    }
+  </div>
+} @else {
+  <div data-testid="profile-article-list">
+    @for (article of visible(); track article.id) {
+      <app-article-preview [article]="article" (favoriteToggled)="toggleFavorite($event)" />
+    }
+  </div>
+}

@@ -1,0 +1,26 @@
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-5) 0;
+}
+
+.page {
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.page:hover { background: var(--color-surface-alt); }
+.page:active { transform: scale(0.97); }
+.page.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}

@@ -1,0 +1,43 @@
+<article class="preview" [attr.data-testid]="'article-preview-' + article.slug">
+  <header class="preview-meta">
+    <a [routerLink]="['/profile', article.author.username]" class="avatar-link">
+      <img
+        class="avatar"
+        [src]="article.author.image"
+        [alt]="article.author.username"
+        width="32"
+        height="32"
+      />
+    </a>
+    <div class="author-info">
+      <a class="author-name" [routerLink]="['/profile', article.author.username]">{{
+        article.author.username
+      }}</a>
+      <span class="article-date">{{ article.createdAt | date: 'longDate' }}</span>
+    </div>
+    <div class="preview-actions">
+      <app-favorite-button
+        [favorited]="article.favorited"
+        [count]="article.favoritesCount"
+        [compact]="true"
+        (toggled)="favoriteToggled.emit(article)"
+      />
+    </div>
+  </header>
+
+  <a class="preview-link" [routerLink]="['/article', article.slug]" data-testid="article-link">
+    <h2 class="preview-title">{{ article.title }}</h2>
+    <p class="preview-description">{{ article.description }}</p>
+  </a>
+
+  <footer class="preview-footer">
+    <span class="read-more">Read more…</span>
+    <ul class="tag-list">
+      @for (tag of article.tagList; track tag) {
+        <li>
+          <a class="tag-pill tag-outline" routerLink="/" [queryParams]="{ tag: tag }">{{ tag }}</a>
+        </li>
+      }
+    </ul>
+  </footer>
+</article>

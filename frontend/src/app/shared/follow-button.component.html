@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="btn btn-sm"
+  [class.btn-secondary]="!following"
+  [class.is-following]="following"
+  [attr.aria-pressed]="following"
+  data-testid="follow-button"
+  (click)="toggled.emit()"
+>
+  <span aria-hidden="true">{{ following ? '−' : '+' }}</span>
+  {{ following ? 'Unfollow' : 'Follow' }} {{ username }}
+</button>

@@ -1,0 +1,79 @@
+<div class="auth-page container page-section" data-testid="register-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Sign up</h1>
+    <p class="auth-switch">
+      <a routerLink="/login" data-testid="link-login">Have an account?</a>
+    </p>
+
+    @if (errors().length) {
+      <ul class="error-messages" data-testid="register-errors">
+        @for (message of errors(); track message) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" data-testid="register-form">
+      <div class="form-group">
+        <label class="form-label" for="register-username">Username</label>
+        <input
+          id="register-username"
+          class="form-control"
+          type="text"
+          autocomplete="username"
+          placeholder="Your name"
+          formControlName="username"
+          data-testid="register-username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="register-email">Email</label>
+        <input
+          id="register-email"
+          class="form-control"
+          type="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          formControlName="email"
+          data-testid="register-email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="register-password">Password</label>
+        <input
+          id="register-password"
+          class="form-control"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Choose a password"
+          formControlName="password"
+          data-testid="register-password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="register-confirm">Confirm password</label>
+        <input
+          id="register-confirm"
+          class="form-control"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Repeat your password"
+          formControlName="confirmPassword"
+          data-testid="register-confirm"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg btn-block"
+        [disabled]="submitting()"
+        data-testid="register-submit"
+      >
+        Sign up
+      </button>
+    </form>
+  </div>
+</div>

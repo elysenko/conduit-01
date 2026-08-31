@@ -1,0 +1,108 @@
+<div class="home" data-testid="home-main">
+  <section class="banner">
+    <h1 data-testid="home-title">Conduit</h1>
+    <p>A place to share your knowledge.</p>
+  </section>
+
+  <div class="container page-section">
+    <div class="row">
+      <div class="col-main">
+        <nav class="nav-pills" data-testid="feed-toggle">
+          @if (isAuthenticated()) {
+            <button
+              type="button"
+              class="nav-pill"
+              [class.active]="activeFeed() === 'your' && !activeTag()"
+              data-testid="tab-your-feed"
+              (click)="goToFeed('your')"
+            >
+              Your Feed
+            </button>
+          }
+          <button
+            type="button"
+            class="nav-pill"
+            [class.active]="activeFeed() === 'global' && !activeTag()"
+            data-testid="tab-global-feed"
+            (click)="goToFeed('global')"
+          >
+            Global Feed
+          </button>
+          @if (activeTag()) {
+            <button type="button" class="nav-pill active" data-testid="tab-tag">
+              #{{ activeTag() }}
+            </button>
+          }
+        </nav>
+
+        @if (activeTag()) {
+          <div class="filter-note">
+            <span>Filtered by <strong>#{{ activeTag() }}</strong></span>
+            <button type="button" class="btn btn-sm btn-secondary" data-testid="clear-tag" (click)="goToTag(null)">
+              Clear filter
+            </button>
+          </div>
+        }
+
+        @if (loading()) {
+          <div class="state-block" data-testid="articles-loading">
+            <div class="spinner"></div>
+            Loading articles…
+          </div>
+        } @else if (error()) {
+          <div class="state-block state-error" data-testid="articles-error">{{ error() }}</div>
+        } @else if (visible().length === 0) {
+          <div class="state-block" data-testid="articles-empty">
+            No articles are here… yet.
+            @if (activeFeed() === 'your') {
+              <p class="empty-hint">Follow a few authors and their writing shows up here.</p>
+            }
+          </div>
+        } @else {
+          <div data-testid="article-list">
+            @for (article of visible(); track article.id) {
+              <app-article-preview [article]="article" (favoriteToggled)="toggleFavorite($event)" />
+            }
+          </div>
+
+          <app-pagination
+            [total]="filtered().length"
+            [pageSize]="pageSize"
+            [currentPage]="currentPage()"
+            (pageChange)="goToPage($event)"
+          />
+        }
+      </div>
+
+      <aside class="col-side">
+        <div class="sidebar">
+          <h2 class="sidebar-title" data-testid="popular-tags-title">Popular Tags</h2>
+          <ul class="tag-list" data-testid="popular-tags">
+            @for (tag of tags(); track tag.name) {
+              <li>
+                <a
+                  class="tag-pill"
+                  [class.tag-active]="tag.name === activeTag()"
+                  routerLink="/"
+                  [queryParams]="{ tag: tag.name }"
+                  [attr.data-testid]="'tag-' + tag.name"
+                  >{{ tag.name }}</a
+                >
+              </li>
+            }
+          </ul>
+        </div>
+
+        @if (isAuthenticated()) {
+          <a class="btn btn-primary btn-block write-cta" routerLink="/editor" data-testid="home-write-cta">
+            Write an article
+          </a>
+        } @else {
+          <a class="btn btn-primary btn-block write-cta" routerLink="/register" data-testid="home-join-cta">
+            Join Conduit to publish
+          </a>
+        }
+      </aside>
+    </div>
+  </div>
+</div>

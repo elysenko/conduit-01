@@ -1,0 +1,16 @@
+<button
+  type="button"
+  class="btn btn-sm"
+  [class.btn-primary]="favorited"
+  [class.btn-outline]="!favorited"
+  [class.compact]="compact"
+  [attr.aria-pressed]="favorited"
+  data-testid="favorite-button"
+  (click)="toggled.emit()"
+>
+  <span aria-hidden="true">&#9829;</span>
+  @if (!compact) {
+    <span>{{ favorited ? 'Unfavorite Article' : label }}</span>
+  }
+  <span class="counter" data-testid="favorite-count">{{ compact ? count : '(' + count + ')' }}</span>
+</button>

@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './layout/header.component';
+import { FooterComponent } from './layout/footer.component';
+import { MobileNavComponent } from './layout/mobile-nav.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  // data-testid="app-ready" is the universal readiness landmark: it enters the DOM only
-  // after Angular bootstraps this root component, so the render gate can wait on it to
-  // confirm the SPA hydrated (not a blank shell / 404 / failed bundle). Keep it here.
-  template: `<div data-testid="app-ready"><router-outlet /></div>`,
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, MobileNavComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {}

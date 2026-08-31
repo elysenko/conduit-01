@@ -1,0 +1,63 @@
+<nav class="navbar" data-testid="app-header">
+  <div class="container navbar-inner">
+    <a class="navbar-brand" routerLink="/" data-testid="nav-brand">conduit</a>
+
+    <ul class="nav-links">
+      <li>
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          data-testid="nav-home"
+          >Home</a
+        >
+      </li>
+
+      @if (isAuthenticated()) {
+        <li>
+          <a routerLink="/editor" routerLinkActive="active" data-testid="nav-new-article"
+            >&plus; New Article</a
+          >
+        </li>
+        <li>
+          <a routerLink="/settings" routerLinkActive="active" data-testid="nav-settings"
+            >Settings</a
+          >
+        </li>
+        @if (isAdmin()) {
+          <li>
+            <a routerLink="/admin/settings" routerLinkActive="active" data-testid="nav-admin"
+              >Admin</a
+            >
+          </li>
+        }
+        <li>
+          <a
+            [routerLink]="['/profile', currentUser()!.username]"
+            routerLinkActive="active"
+            class="nav-user"
+            data-testid="nav-profile"
+          >
+            <img
+              class="avatar"
+              [src]="currentUser()!.image"
+              [alt]="currentUser()!.username"
+              width="26"
+              height="26"
+            />
+            {{ currentUser()!.username }}
+          </a>
+        </li>
+      } @else {
+        <li>
+          <a routerLink="/login" routerLinkActive="active" data-testid="nav-login">Sign in</a>
+        </li>
+        <li>
+          <a routerLink="/register" routerLinkActive="active" data-testid="nav-register"
+            >Sign up</a
+          >
+        </li>
+      }
+    </ul>
+  </div>
+</nav>

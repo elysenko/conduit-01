@@ -1,0 +1,42 @@
+.filter-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.sidebar {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.sidebar-title {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.tag-active {
+  background: var(--color-primary);
+}
+
+.empty-hint {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-sm);
+}
+
+.write-cta {
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding: var(--space-3);
+  }
+}

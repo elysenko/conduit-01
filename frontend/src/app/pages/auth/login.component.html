@@ -1,0 +1,60 @@
+<div class="auth-page container page-section" data-testid="login-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Sign in</h1>
+    <p class="auth-switch">
+      <a routerLink="/register" data-testid="link-register">Need an account?</a>
+    </p>
+
+    @if (errors().length) {
+      <ul class="error-messages" data-testid="login-errors">
+        @for (message of errors(); track message) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" data-testid="login-form">
+      <div class="form-group">
+        <label class="form-label" for="login-email">Email</label>
+        <input
+          id="login-email"
+          class="form-control"
+          type="email"
+          autocomplete="email"
+          placeholder="jake@demo"
+          formControlName="email"
+          data-testid="login-email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="login-password">Password</label>
+        <input
+          id="login-password"
+          class="form-control"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Your password"
+          formControlName="password"
+          data-testid="login-password"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg btn-block"
+        [disabled]="submitting()"
+        data-testid="login-submit"
+      >
+        Sign in
+      </button>
+    </form>
+
+    <p class="demo-hint">
+      Seeded demo author: <strong>jake&#64;demo</strong> / <strong>Demo1234!</strong>
+    </p>
+    <button type="button" class="demo-link" data-testid="demo-login" (click)="demoLogin()">
+      Skip login — Demo Mode
+    </button>
+  </div>
+</div>

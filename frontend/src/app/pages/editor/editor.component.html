@@ -1,0 +1,103 @@
+<div class="container page-section" data-testid="editor-page">
+  <div class="editor-card">
+    <h1 class="editor-title" data-testid="editor-title">{{ heading() }}</h1>
+
+    @if (errors().length) {
+      <ul class="error-messages" data-testid="editor-errors">
+        @for (message of errors(); track message) {
+          <li>{{ message }}</li>
+        }
+      </ul>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="publish()" data-testid="editor-form">
+      <div class="form-group">
+        <label class="form-label" for="editor-title-input">Article title</label>
+        <input
+          id="editor-title-input"
+          class="form-control"
+          type="text"
+          placeholder="How to train your dragon"
+          formControlName="title"
+          data-testid="editor-title-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="editor-description">What’s this article about?</label>
+        <input
+          id="editor-description"
+          class="form-control"
+          type="text"
+          placeholder="Ever wonder how?"
+          formControlName="description"
+          data-testid="editor-description"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="editor-body">Write your article (in markdown)</label>
+        <textarea
+          id="editor-body"
+          class="form-control editor-body"
+          rows="10"
+          placeholder="Start writing…"
+          formControlName="body"
+          data-testid="editor-body"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="editor-tag">Tags</label>
+        <div class="tag-input-row">
+          <input
+            id="editor-tag"
+            class="form-control"
+            type="text"
+            placeholder="Enter a tag and press Add"
+            [value]="tagInput()"
+            (input)="onTagInput($event)"
+            (keydown.enter)="$event.preventDefault(); addTag()"
+            data-testid="editor-tag-input"
+          />
+          <button type="button" class="btn btn-secondary" data-testid="editor-tag-add" (click)="addTag()">
+            Add
+          </button>
+        </div>
+        <ul class="tag-list editor-tags" data-testid="editor-tags">
+          @for (tag of tags(); track tag) {
+            <li>
+              <button
+                type="button"
+                class="tag-pill removable"
+                [attr.data-testid]="'editor-tag-' + tag"
+                (click)="removeTag(tag)"
+              >
+                {{ tag }} <span aria-hidden="true">×</span>
+                <span class="sr-only">Remove tag</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="editor-actions">
+        <button type="button" class="btn btn-secondary" data-testid="editor-cancel" (click)="cancel()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg"
+          [disabled]="saving()"
+          data-testid="editor-publish"
+        >
+          {{ isEdit ? 'Update article' : 'Publish article' }}
+        </button>
+      </div>
+    </form>
+
+    <p class="editor-hint">
+      Drafts are never lost — <a routerLink="/">return to the feed</a> and come back later.
+    </p>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+.footer {
+  background: var(--color-surface-alt);
+  padding: var(--space-4) 0;
+  margin-top: var(--space-6);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.footer-brand {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.attribution {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+}

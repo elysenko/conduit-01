@@ -1,0 +1,57 @@
+<div data-testid="profile-page">
+  <header class="profile-banner">
+    <div class="container profile-inner">
+      <img
+        class="avatar profile-avatar"
+        [src]="profile().image"
+        [alt]="profile().username"
+        width="100"
+        height="100"
+      />
+      <h1 class="profile-name" data-testid="profile-username">{{ profile().username }}</h1>
+      @if (profile().bio) {
+        <p class="profile-bio" data-testid="profile-bio">{{ profile().bio }}</p>
+      } @else {
+        <p class="profile-bio empty">This author hasn’t written a bio yet.</p>
+      }
+
+      <div class="profile-actions">
+        @if (isOwnProfile()) {
+          <a class="btn btn-sm btn-secondary" routerLink="/settings" data-testid="profile-edit"
+            >Edit profile settings</a
+          >
+        } @else {
+          <app-follow-button
+            [username]="profile().username"
+            [following]="profile().following"
+            (toggled)="toggleFollow()"
+          />
+        }
+      </div>
+    </div>
+  </header>
+
+  <div class="container page-section">
+    <div class="profile-tabs">
+      <nav class="nav-pills" data-testid="profile-tabs">
+        <a
+          class="nav-pill"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [routerLink]="['/profile', profile().username]"
+          data-testid="tab-my-articles"
+          >My Articles</a
+        >
+        <a
+          class="nav-pill"
+          routerLinkActive="active"
+          [routerLink]="['/profile', profile().username, 'favorites']"
+          data-testid="tab-favorited"
+          >Favorited Articles</a
+        >
+      </nav>
+
+      <router-outlet />
+    </div>
+  </div>
+</div>
