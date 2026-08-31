@@ -29,6 +29,11 @@ async function main() {
       username: 'jake',
       bio: 'I work at statefarm',
       role: 'ADMIN',
+      // Re-asserted on EVERY run, not just create. A create-only password freezes
+      // the hash at first deploy while this script keeps printing a fresh
+      // SEED_CRED line, so the recorded credential silently drifts from the
+      // stored hash and demo login starts 401-ing.
+      passwordHash,
     },
     create: {
       email: DEMO_EMAIL,
