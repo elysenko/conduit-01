@@ -66,7 +66,7 @@
           </div>
 
           <app-pagination
-            [total]="filtered().length"
+            [total]="total()"
             [pageSize]="pageSize"
             [currentPage]="currentPage()"
             (pageChange)="goToPage($event)"

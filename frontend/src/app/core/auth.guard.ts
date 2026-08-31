@@ -1,23 +1,31 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 
 /**
- * Preview contract: a cold load of a guarded route RENDERS that route rather than
- * redirecting to /login. The guard seeds a demo session and always returns true, so it
- * can never enter a guard/shell redirect loop.
+ * Guards the authenticated routes (/editor, /editor/:slug, /settings).
+ *
+ * Now that the SPA talks to the live API, letting an anonymous visitor into the editor
+ * would only produce a 401 on publish. Redirecting to /login carries the intended
+ * destination in `returnUrl` so the sign-in flow lands where the user was headed.
  */
-export const authGuard: CanActivateFn = () => {
-  inject(AuthService).ensureSession();
-  return true;
+export const authGuard: CanActivateFn = (_route, state) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isAuthenticated()) {
+    return true;
+  }
+  return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 };
 
-/** Admin routes behave the same way, but promote the seeded session to ADMIN. */
-export const adminGuard: CanActivateFn = () => {
+/** Admin-only routes. Anonymous users sign in; signed-in non-admins go home. */
+export const adminGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
-  auth.ensureSession();
-  if (!auth.isAdmin()) {
-    auth.updateProfile({ role: 'ADMIN' });
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
   }
-  return true;
+  return auth.isAdmin() ? true : router.createUrlTree(['/']);
 };

@@ -37,6 +37,8 @@ export interface Comment {
   id: string;
   body: string;
   createdAt: string;
+  /** Present on the API payload; unused by the templates but kept for round-tripping. */
+  updatedAt?: string;
   author: Profile;
 }
 
@@ -59,4 +61,10 @@ export interface SystemSettingField {
   value: string;
   secret: boolean;
   placeholder: string;
+  /**
+   * Which layer supplied the effective value: an env var, a `SystemSetting` row, or
+   * nothing. Env-provisioned fields cannot be overridden by a PATCH, so the client uses
+   * this to avoid sending edits that the resolver would ignore.
+   */
+  source?: 'env' | 'db' | null;
 }

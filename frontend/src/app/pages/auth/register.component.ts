@@ -25,14 +25,20 @@ export class RegisterComponent {
     confirmPassword: ['', [Validators.required]],
   });
 
-  submit(): void {
+  async submit(): Promise<void> {
+    if (this.submitting()) {
+      return;
+    }
     this.submitting.set(true);
-    const { username, email, password, confirmPassword } = this.form.getRawValue();
-    const errors = this.auth.register(username, email, password, confirmPassword);
-    this.errors.set(errors);
-    this.submitting.set(false);
-    if (errors.length === 0) {
-      void this.router.navigate(['/']);
+    try {
+      const { username, email, password, confirmPassword } = this.form.getRawValue();
+      const errors = await this.auth.register(username, email, password, confirmPassword);
+      this.errors.set(errors);
+      if (errors.length === 0) {
+        await this.router.navigate(['/']);
+      }
+    } finally {
+      this.submitting.set(false);
     }
   }
 }

@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SystemSettingView } from '../../core/models';
+import { ApiService, apiErrorMessage } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
-
-const PLACEHOLDER = 'PLACEHOLDER_CONFIGURE_IN_SETTINGS';
 
 @Component({
   selector: 'app-admin-settings',
@@ -15,35 +14,22 @@ const PLACEHOLDER = 'PLACEHOLDER_CONFIGURE_IN_SETTINGS';
 })
 export class AdminSettingsComponent {
   private readonly auth = inject(AuthService);
+  private readonly api = inject(ApiService);
 
   readonly currentUser = this.auth.currentUser;
-  readonly loading = signal(false);
+  readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly savedService = signal<string | null>(null);
 
-  settings = signal<SystemSettingView[]>([
-    {
-      service: 'postgresql',
-      label: 'PostgreSQL',
-      description: 'Primary datastore for users, articles, comments, tags and follows.',
-      configured: true,
-      fields: [
-        { key: 'DATABASE_URL', label: 'Connection string', value: 'postgresql://conduit:••••••••@postgres:5432/conduit', secret: true, placeholder: 'postgresql://user:password@host:5432/db' },
-      ],
-    },
-    {
-      service: 'minio',
-      label: 'MinIO object storage',
-      description: 'Holds uploaded avatars and article cover images. Reads fall back to plain URLs until configured.',
-      configured: false,
-      fields: [
-        { key: 'MINIO_ENDPOINT', label: 'Endpoint', value: '', secret: false, placeholder: 'https://minio.internal:9000' },
-        { key: 'MINIO_ACCESS_KEY', label: 'Access key', value: '', secret: true, placeholder: PLACEHOLDER },
-        { key: 'MINIO_SECRET_KEY', label: 'Secret key', value: '', secret: true, placeholder: PLACEHOLDER },
-        { key: 'MINIO_BUCKET', label: 'Bucket', value: 'conduit-media', secret: false, placeholder: 'conduit-media' },
-      ],
-    },
-  ]);
+  readonly settings = signal<SystemSettingView[]>([]);
+
+  /**
+   * Keys the admin actually typed into, by service.
+   *
+   * Secret values come back masked ("••••••••"), so echoing the whole form back on save
+   * would overwrite a real credential with its own mask. Only edited keys are sent.
+   */
+  private readonly dirty = new Map<string, Set<string>>();
 
   readonly unconfigured = computed(() =>
     this.settings()
@@ -51,8 +37,30 @@ export class AdminSettingsComponent {
       .map((item) => item.label),
   );
 
+  constructor() {
+    void this.load();
+  }
+
+  private async load(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      this.settings.set(await this.api.listSettings());
+      this.dirty.clear();
+    } catch (err) {
+      this.settings.set([]);
+      this.error.set(apiErrorMessage(err, 'Could not load service settings.'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   updateField(service: string, key: string, event: Event): void {
     const value = (event.target as HTMLInputElement).value;
+    const keys = this.dirty.get(service) ?? new Set<string>();
+    keys.add(key);
+    this.dirty.set(service, keys);
+
     this.settings.update((list) =>
       list.map((item) =>
         item.service === service
@@ -67,20 +75,36 @@ export class AdminSettingsComponent {
     );
   }
 
-  save(service: string): void {
-    this.settings.update((list) =>
-      list.map((item) =>
-        item.service === service
-          ? {
-              ...item,
-              configured: item.fields.every(
-                (field) => field.value.trim() !== '' && field.value.trim() !== PLACEHOLDER,
-              ),
-            }
-          : item,
-      ),
-    );
-    this.savedService.set(service);
+  async save(service: string): Promise<void> {
+    const target = this.settings().find((item) => item.service === service);
+    const edited = this.dirty.get(service);
+    if (!target) {
+      return;
+    }
+    this.error.set(null);
+    this.savedService.set(null);
+
+    const patch: Record<string, string> = {};
+    for (const field of target.fields) {
+      if (edited?.has(field.key)) {
+        patch[field.key] = field.value;
+      }
+    }
+    if (Object.keys(patch).length === 0) {
+      // Nothing changed — still acknowledge, so the button never feels dead.
+      this.savedService.set(service);
+      return;
+    }
+
+    try {
+      // The PATCH response is the freshly re-resolved view (values re-masked, and
+      // `configured` recomputed server-side), so it replaces local state wholesale.
+      this.settings.set(await this.api.saveSettings(patch));
+      this.dirty.delete(service);
+      this.savedService.set(service);
+    } catch (err) {
+      this.error.set(apiErrorMessage(err, 'Could not save those credentials.'));
+    }
   }
 
   trackField(_index: number, key: string): string {

@@ -24,25 +24,46 @@ export class LoginComponent {
     password: ['Demo1234!', [Validators.required]],
   });
 
-  submit(): void {
+  async submit(): Promise<void> {
+    if (this.submitting()) {
+      return;
+    }
     this.submitting.set(true);
-    const { email, password } = this.form.getRawValue();
-    const errors = this.auth.login(email, password);
-    this.errors.set(errors);
-    this.submitting.set(false);
-    if (errors.length === 0) {
-      this.redirect();
+    try {
+      const { email, password } = this.form.getRawValue();
+      const errors = await this.auth.login(email, password);
+      this.errors.set(errors);
+      if (errors.length === 0) {
+        await this.redirect();
+      }
+    } finally {
+      this.submitting.set(false);
     }
   }
 
-  /** Secondary shortcut: seeds the signed-in state with no input at all. */
-  demoLogin(): void {
-    this.auth.demoLogin();
-    this.redirect();
+  /** Secondary shortcut: signs in as the seeded demo author against the real API. */
+  async demoLogin(): Promise<void> {
+    if (this.submitting()) {
+      return;
+    }
+    this.submitting.set(true);
+    try {
+      const errors = await this.auth.demoLogin();
+      this.errors.set(errors);
+      if (errors.length === 0) {
+        await this.redirect();
+      }
+    } finally {
+      this.submitting.set(false);
+    }
   }
 
-  private redirect(): void {
+  private async redirect(): Promise<void> {
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    void this.router.navigateByUrl(returnUrl && returnUrl.startsWith('/') ? returnUrl : '/');
+    // Only same-app paths are honoured, so a crafted ?returnUrl= cannot bounce the
+    // user to another origin after a successful sign-in.
+    await this.router.navigateByUrl(
+      returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/',
+    );
   }
 }

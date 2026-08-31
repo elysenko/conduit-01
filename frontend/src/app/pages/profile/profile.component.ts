@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Profile } from '../../core/models';
+import { ApiService, apiErrorMessage, avatarFor } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 import { FollowButtonComponent } from '../../shared/follow-button.component';
 
@@ -14,18 +15,15 @@ import { FollowButtonComponent } from '../../shared/follow-button.component';
 })
 export class ProfileComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly api = inject(ApiService);
 
   readonly currentUser = this.auth.currentUser;
-  readonly loading = signal(false);
+  readonly loading = signal(true);
   readonly error = signal<string | null>(null);
 
-  profiles = signal<Profile[]>([
-    { username: 'jake', bio: 'I work at statefarm', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jake', following: false },
-    { username: 'ada', bio: 'Field recordist and essayist. Six months in a rainforest, one microphone.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ada', following: true },
-    { username: 'marcus', bio: 'Building small things carefully.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=marcus', following: true },
-    { username: 'priya', bio: 'Platform engineer. Recovering architect.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=priya', following: false },
-  ]);
+  private readonly loaded = signal<Profile | null>(null);
 
   private readonly params = toSignal(this.route.paramMap, {
     initialValue: this.route.snapshot.paramMap,
@@ -33,25 +31,75 @@ export class ProfileComponent {
 
   readonly username = computed(() => this.params().get('username') ?? '');
 
-  /** Unknown usernames still render a reviewable profile rather than a dead end. */
+  /**
+   * The banner renders unconditionally, so this never returns null: while the request
+   * is in flight (or if the username is unknown) it falls back to a placeholder built
+   * from the route param, which keeps the header stable instead of collapsing.
+   */
   readonly profile = computed<Profile>(() => {
-    const name = this.username();
-    return (
-      this.profiles().find((item) => item.username === name) ?? {
-        username: name || 'reader',
-        bio: '',
-        image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name || 'reader'}`,
-        following: false,
-      }
-    );
+    const loaded = this.loaded();
+    if (loaded) {
+      return loaded;
+    }
+    const name = this.username() || 'reader';
+    return { username: name, bio: '', image: avatarFor(name), following: false };
   });
 
   readonly isOwnProfile = computed(() => this.profile().username === this.currentUser()?.username);
 
-  toggleFollow(): void {
-    const name = this.profile().username;
-    this.profiles.update((list) =>
-      list.map((item) => (item.username === name ? { ...item, following: !item.following } : item)),
-    );
+  private requestId = 0;
+
+  constructor() {
+    effect(() => {
+      const name = this.username();
+      void this.load(name);
+    });
+  }
+
+  private async load(username: string): Promise<void> {
+    const id = ++this.requestId;
+    if (!username) {
+      this.loaded.set(null);
+      this.loading.set(false);
+      return;
+    }
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      const profile = await this.api.getProfile(username);
+      if (id !== this.requestId) {
+        return;
+      }
+      this.loaded.set(profile);
+    } catch (err) {
+      if (id !== this.requestId) {
+        return;
+      }
+      this.loaded.set(null);
+      const status = (err as { status?: number } | null)?.status;
+      this.error.set(status === 404 ? null : apiErrorMessage(err, 'Could not load this profile.'));
+    } finally {
+      if (id === this.requestId) {
+        this.loading.set(false);
+      }
+    }
+  }
+
+  async toggleFollow(): Promise<void> {
+    const current = this.loaded();
+    if (!current) {
+      return;
+    }
+    if (!this.auth.isAuthenticated()) {
+      await this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+    const next = !current.following;
+    this.loaded.set({ ...current, following: next });
+    try {
+      this.loaded.set(await this.api.followProfile(current.username, next));
+    } catch {
+      this.loaded.set(current);
+    }
   }
 }

@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { UpdateUserInput } from '../../core/api.service';
 
 @Component({
   selector: 'app-settings',
@@ -28,7 +29,33 @@ export class SettingsComponent {
     password: [''],
   });
 
-  submit(): void {
+  constructor() {
+    // The form is seeded from the cached session so it paints instantly, but AuthService
+    // re-validates that cache against GET /api/user a moment later. Without this, a stale
+    // cached username/email would be written straight back on save, silently reverting a
+    // change made elsewhere. Only untouched controls are refreshed, so it can never
+    // clobber what the user is currently typing.
+    effect(() => {
+      const user = this.currentUser();
+      if (!user) {
+        return;
+      }
+      const fresh = {
+        image: user.image ?? '',
+        username: user.username,
+        bio: user.bio ?? '',
+        email: user.email,
+      };
+      for (const [key, value] of Object.entries(fresh)) {
+        const control = this.form.get(key);
+        if (control?.pristine) {
+          control.setValue(value, { emitEvent: false });
+        }
+      }
+    });
+  }
+
+  async submit(): Promise<void> {
     const value = this.form.getRawValue();
     const errors: string[] = [];
     if (!value.username.trim()) {
@@ -42,12 +69,24 @@ export class SettingsComponent {
     if (errors.length) {
       return;
     }
-    this.auth.updateProfile({
+
+    const patch: UpdateUserInput = {
       image: value.image.trim(),
       username: value.username.trim(),
       bio: value.bio.trim(),
       email: value.email.trim(),
-    });
+    };
+    // The password field is omitted unless filled in: the backend DTO treats an absent
+    // password as "leave the stored hash untouched", and sending '' would be a 400.
+    if (value.password) {
+      patch.password = value.password;
+    }
+
+    const failures = await this.auth.updateProfile(patch);
+    this.errors.set(failures);
+    if (failures.length) {
+      return;
+    }
     this.form.patchValue({ password: '' });
     this.saved.set(true);
   }

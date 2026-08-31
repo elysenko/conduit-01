@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Comment } from '../../core/models';
+import { ApiService, apiErrorMessage } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
@@ -15,34 +16,32 @@ import { AuthService } from '../../core/auth.service';
 export class CommentListComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly api = inject(ApiService);
 
-  @Input({ required: true }) articleSlug = '';
+  private slug = '';
+
+  /**
+   * Setter rather than a plain field: the parent swaps the slug when the router reuses
+   * this component for a different article, and the thread has to reload with it.
+   */
+  @Input({ required: true })
+  set articleSlug(value: string) {
+    if (value === this.slug) {
+      return;
+    }
+    this.slug = value;
+    void this.load();
+  }
+  get articleSlug(): string {
+    return this.slug;
+  }
 
   readonly currentUser = this.auth.currentUser;
   readonly isAuthenticated = this.auth.isAuthenticated;
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  comments = signal<Comment[]>([
-    {
-      id: 'c-1',
-      body: 'The recall whistle tip alone was worth the read. Three notes, every time — it works.',
-      createdAt: '2026-08-25T10:02:00.000Z',
-      author: { username: 'ada', bio: 'Field recordist and essayist.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ada', following: true },
-    },
-    {
-      id: 'c-2',
-      body: 'Week one being "sit there and do nothing" is the part everyone skips, and then wonders why week three goes badly.',
-      createdAt: '2026-08-25T14:31:00.000Z',
-      author: { username: 'marcus', bio: 'Building small things carefully.', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=marcus', following: true },
-    },
-    {
-      id: 'c-3',
-      body: 'Glad this landed. Happy to answer questions in the replies.',
-      createdAt: '2026-08-26T08:15:00.000Z',
-      author: { username: 'jake', bio: 'I work at statefarm', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jake', following: false },
-    },
-  ]);
+  readonly comments = signal<Comment[]>([]);
 
   readonly form = this.fb.nonNullable.group({
     body: ['', [Validators.required]],
@@ -50,34 +49,64 @@ export class CommentListComponent {
 
   readonly canSubmit = computed(() => this.isAuthenticated());
 
-  post(): void {
-    const body = this.form.getRawValue().body.trim();
-    const user = this.currentUser();
-    if (!body || !user) {
+  private requestId = 0;
+
+  private async load(): Promise<void> {
+    const id = ++this.requestId;
+    const slug = this.slug;
+    if (!slug) {
+      this.comments.set([]);
       return;
     }
-    this.comments.update((list) => [
-      ...list,
-      {
-        id: `c-${list.length + 1}-${body.length}`,
-        body,
-        createdAt: new Date().toISOString(),
-        author: {
-          username: user.username,
-          bio: user.bio,
-          image: user.image,
-          following: false,
-        },
-      },
-    ]);
-    this.form.reset({ body: '' });
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      const comments = await this.api.listComments(slug);
+      if (id !== this.requestId) {
+        return;
+      }
+      this.comments.set(comments);
+    } catch (err) {
+      if (id !== this.requestId) {
+        return;
+      }
+      this.comments.set([]);
+      this.error.set(apiErrorMessage(err, 'Could not load comments.'));
+    } finally {
+      if (id === this.requestId) {
+        this.loading.set(false);
+      }
+    }
+  }
+
+  async post(): Promise<void> {
+    const body = this.form.getRawValue().body.trim();
+    if (!body || !this.currentUser() || !this.slug) {
+      return;
+    }
+    this.error.set(null);
+    try {
+      const created = await this.api.addComment(this.slug, body);
+      this.comments.update((list) => [...list, created]);
+      this.form.reset({ body: '' });
+    } catch (err) {
+      this.error.set(apiErrorMessage(err, 'Could not post your comment.'));
+    }
   }
 
   isOwn(comment: Comment): boolean {
     return comment.author.username === this.currentUser()?.username;
   }
 
-  remove(comment: Comment): void {
+  async remove(comment: Comment): Promise<void> {
+    const previous = this.comments();
     this.comments.update((list) => list.filter((item) => item.id !== comment.id));
+    try {
+      await this.api.deleteComment(this.slug, comment.id);
+    } catch (err) {
+      // Put it back: the delete was rejected (403 when it is not the caller's comment).
+      this.comments.set(previous);
+      this.error.set(apiErrorMessage(err, 'Could not delete that comment.'));
+    }
   }
 }
