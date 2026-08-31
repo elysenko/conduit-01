@@ -2,7 +2,10 @@
 // Data model per the technical plan (Step 2) and task decomposition.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // node:22-alpine runtime => musl; keep glibc arm64 too so a debian-based
+  // build/runtime swap does not break the query engine at startup.
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {

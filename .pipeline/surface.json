@@ -8,15 +8,147 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/health"
+      "path": "/api/health",
+      "auth": "public",
+      "notes": "Liveness probe; no DB access"
     },
     {
       "method": "GET",
-      "path": "/trpc/users.findAll"
+      "path": "/api/health/deep",
+      "auth": "public",
+      "notes": "Readiness probe; SELECT 1, 503 when DB is down"
     },
     {
       "method": "GET",
-      "path": "/trpc/users.findById"
+      "path": "/api/docs",
+      "auth": "public",
+      "notes": "Swagger UI (backend_probe_path)"
+    },
+    {
+      "method": "POST",
+      "path": "/api/users",
+      "auth": "public",
+      "notes": "Register -> {user}; 409 on duplicate username/email"
+    },
+    {
+      "method": "POST",
+      "path": "/api/users/login",
+      "auth": "public",
+      "notes": "Login -> {user} with JWT; 401 on bad credentials"
+    },
+    {
+      "method": "GET",
+      "path": "/api/user",
+      "auth": "jwt",
+      "notes": "Current user -> {user}"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/user",
+      "auth": "jwt",
+      "notes": "Update current user -> {user}; 409 on email/username clash"
+    },
+    {
+      "method": "GET",
+      "path": "/api/profiles/:username",
+      "auth": "optional-jwt",
+      "notes": "-> {profile}; `following` is viewer-relative"
+    },
+    {
+      "method": "POST",
+      "path": "/api/profiles/:username/follow",
+      "auth": "jwt",
+      "notes": "Idempotent follow -> {profile}; 400 on self-follow"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/profiles/:username/follow",
+      "auth": "jwt",
+      "notes": "Idempotent unfollow -> {profile}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/articles",
+      "auth": "optional-jwt",
+      "notes": "Filters tag/author/favorited + limit/offset/page -> {articles, articlesCount}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/articles/feed",
+      "auth": "jwt",
+      "notes": "Followed authors only -> {articles, articlesCount}"
+    },
+    {
+      "method": "GET",
+      "path": "/api/articles/:slug",
+      "auth": "optional-jwt",
+      "notes": "-> {article}"
+    },
+    {
+      "method": "POST",
+      "path": "/api/articles",
+      "auth": "jwt",
+      "notes": "Create -> {article}; slugified, tags connectOrCreate"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/articles/:slug",
+      "auth": "jwt",
+      "notes": "Update -> {article}; 403 unless author, re-slugs on title change"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/articles/:slug",
+      "auth": "jwt",
+      "notes": "Delete; 403 unless author; cascades comments/tags/favorites"
+    },
+    {
+      "method": "POST",
+      "path": "/api/articles/:slug/favorite",
+      "auth": "jwt",
+      "notes": "-> {article}; favoritesCount recomputed"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/articles/:slug/favorite",
+      "auth": "jwt",
+      "notes": "-> {article}; count never negative"
+    },
+    {
+      "method": "GET",
+      "path": "/api/articles/:slug/comments",
+      "auth": "optional-jwt",
+      "notes": "-> {comments}; 404 on unknown slug"
+    },
+    {
+      "method": "POST",
+      "path": "/api/articles/:slug/comments",
+      "auth": "jwt",
+      "notes": "-> {comment}"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/articles/:slug/comments/:id",
+      "auth": "jwt",
+      "notes": "403 unless comment author; 404 if id belongs to another article"
+    },
+    {
+      "method": "GET",
+      "path": "/api/tags",
+      "auth": "public",
+      "notes": "-> {tags: string[], tagCounts: [{name,count}]}, usage desc"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/settings",
+      "auth": "jwt+ADMIN",
+      "notes": "Service credentials, secrets masked; 403 for non-admins"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/settings",
+      "auth": "jwt+ADMIN",
+      "notes": "Upsert flat key/value map; 400 on unknown key"
     }
   ],
   "components": [
