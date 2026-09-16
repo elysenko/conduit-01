@@ -1,0 +1,77 @@
+{
+  "site": {
+    "name": "tu-prep-zunt68c_",
+    "site_id": "tu-prep-zunt68c_"
+  },
+  "meta": {
+    "generated_by": "declared"
+  },
+  "front_end": {
+    "pages": [
+      {
+        "name": "Home",
+        "page_id": "home",
+        "url": "/",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Settings",
+        "page_id": "admin-settings",
+        "url": "/admin/settings",
+        "linked_page_ids": []
+      },
+      {
+        "name": ":slug",
+        "page_id": "article-slug",
+        "url": "/article/:slug",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Editor",
+        "page_id": "editor",
+        "url": "/editor",
+        "linked_page_ids": []
+      },
+      {
+        "name": ":slug",
+        "page_id": "editor-slug",
+        "url": "/editor/:slug",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Favorites",
+        "page_id": "favorites",
+        "url": "/favorites",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Login",
+        "page_id": "login",
+        "url": "/login",
+        "linked_page_ids": []
+      },
+      {
+        "name": ":username",
+        "page_id": "profile-username",
+        "url": "/profile/:username",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Register",
+        "page_id": "register",
+        "url": "/register",
+        "linked_page_ids": []
+      },
+      {
+        "name": "Settings",
+        "page_id": "settings",
+        "url": "/settings",
+        "linked_page_ids": []
+      }
+    ]
+  },
+  "back_end": {
+    "tables": []
+  },
+  "generated_by": "declared"
+}
